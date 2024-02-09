@@ -30,6 +30,19 @@ from cobra import Metabolite
 ################################################################
 ### FUNCTION initialize_models #################################    
 def initialize_models():
+ """Parameters:
+     - None
+ Returns:
+     - None
+ Processing Logic:
+     - Loads and modifies two GEM models, iJB785 and iJN1411, to create a new model for P.putida.
+     - Removes reactions related to nitrate intake.
+     - Adds reactions to allow sucrose intake and PHA production.
+     - Adjusts oxygen and other metabolite intake/excretion levels.
+     - Saves the new model as a MATLAB file.
+ Example of usage:
+     initialize_models()"""
+ 
  # Only to run 1st time, to build the models!!
  if not(os.path.exists('ModelsInput/iJB785.mat')) or not(os.path.exists('ModelsInput/iJN1411.mat')):
      print('ERROR! Not iJB785.mat or iJN1411.mat files with GEM of consortium strains in ModelsInput!')
@@ -191,6 +204,22 @@ def initialize_models():
 ### FUNCTION mat_to_comets #####################################    
 # mat_to_comets(modelPath)
 def mat_to_comets(matInputFile):
+    """Converts a COBRA model from a MATLAB file format to a COMETS file format.
+    Parameters:
+        - matInputFile (str): The name of the MATLAB file to be converted.
+    Returns:
+        - None: The function does not return any value, but instead creates a new COMETS file with the same name as the MATLAB file.
+    Processing Logic:
+        - Load the COBRA model from the MATLAB file.
+        - Write the S matrix to the COMETS file.
+        - Write the bounds to the COMETS file.
+        - Write the objective reaction to the COMETS file.
+        - Write the metabolite names to the COMETS file.
+        - Write the reaction names to the COMETS file.
+        - Write the exchange reactions to the COMETS file.
+    Example:
+        mat_to_comets('model.mat')  # Converts the model.mat file to a COMETS file."""
+    
     model=cobra.io.load_matlab_model(matInputFile)
     # Open output file:
     with open(matInputFile+'.cmt', mode='w') as f:
