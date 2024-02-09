@@ -341,7 +341,7 @@ def synKtPHAFLYCOP_oneConf(sucrPer=30,biomassSynecho=3.5,biomassKT=0.1,nh4=18,fi
         # 6.- [R call] Run script to generate one graph:
         title=str(sucrPer)+'-'+str(biomass1)+'-'+str(biomass2)+'-'+str(nh4)
         print(title)
-        subprocess.call(["../../Scripts/plot_biomassX2_vs_3mediaItem.sh 'template1' 'sucr' 'nh4' 'C80aPHA' '"+str(50)+"' '"+str(title)+"' 'blue' 'black' 'darkmagenta' 'Synecho' 'KT'"],shell=True)
+        subprocess.call(["../../Scripts/plot_biomassX2_vs_3mediaItem.sh 'template1' 'sucr' 'nh4' 'C80aPHA' '"+str(50)+"' '"+str(title)+"' 'blue' 'black' 'darkmagenta' 'Synecho' 'KT'"],shell=False)
 
         # 7.1.- Determine endCycle: when nh4 is exhausted
         with open("biomass_vs_sucr_nh4_C80aPHA_template1.txt", "r") as sources:        
@@ -362,7 +362,7 @@ def synKtPHAFLYCOP_oneConf(sucrPer=30,biomassSynecho=3.5,biomassKT=0.1,nh4=18,fi
         biomass1New=float(finalBiomassV[1])
         biomass2New=float(finalBiomassV[2])
         # Get metabolite value in endCycle (at the end of first phase) in a python dictionary
-        subprocess.call(["../../Scripts/get_media_composition_oneCycle.sh 'template1' '"+str(endCycle)+"'"],shell=True)
+        subprocess.call(["../../Scripts/get_media_composition_oneCycle.sh 'template1' '"+str(endCycle)+"'"],shell=False)
         fileMedia="media_cycle_"+str(endCycle)+".txt"
         metDict = {}
         with open(fileMedia) as f:
@@ -401,13 +401,13 @@ def synKtPHAFLYCOP_oneConf(sucrPer=30,biomassSynecho=3.5,biomassKT=0.1,nh4=18,fi
         # [R call] Run script to generate one graph:
         title=str(sucrPer)+'-'+str(biomass1New)+'-'+str(biomass2New)+'-'+str(nh4)
         print(title)
-        subprocess.call(["../../Scripts/plot_biomassX2_vs_3mediaItem.sh 'template2' 'sucr' 'nh4' 'C80aPHA' '"+str(maxCycles2/10)+"' '"+str(title)+"' 'blue' 'black' 'darkmagenta' 'Synecho' 'KT'"],shell=True)
+        subprocess.call(["../../Scripts/plot_biomassX2_vs_3mediaItem.sh 'template2' 'sucr' 'nh4' 'C80aPHA' '"+str(maxCycles2/10)+"' '"+str(title)+"' 'blue' 'black' 'darkmagenta' 'Synecho' 'KT'"],shell=False)
 
         # Generate combined files (biomass, flux, media) with output COMETS 1 and 2:
         # A.-biomass
         #   head 1-n template1.txt + template2.txt (without header or the first line wiht the same values)
-        subprocess.call(["head -n"+str(endCycle+1)+" total_biomass_log_template1.txt > total_biomass_log_template.txt"],shell=True)
-        subprocess.call(["tail -n"+str(maxCycles2)+" total_biomass_log_template2.txt > temp_biomass2.txt"],shell=True)
+        subprocess.call(["head -n"+str(endCycle+1)+" total_biomass_log_template1.txt > total_biomass_log_template.txt"],shell=False)
+        subprocess.call(["tail -n"+str(maxCycles2)+" total_biomass_log_template2.txt > temp_biomass2.txt"],shell=False)
         count=endCycle+1
         with open("temp_biomass2.txt", "r") as fin:
             with open("total_biomass_log_template.txt", "a") as fout:
@@ -422,31 +422,31 @@ def synKtPHAFLYCOP_oneConf(sucrPer=30,biomassSynecho=3.5,biomassKT=0.1,nh4=18,fi
         # First file fragment
         cmd="grep -n 'media_"+str(endCycle+1)+"{1}' media_log_template1.txt | cut -d: -f1"
         numLine1=int(subprocess.check_output(cmd,shell=True).decode('utf-8').strip())
-        subprocess.call(["head -n"+str(numLine1-1)+" media_log_template1.txt > media_log_template.txt"],shell=True)
+        subprocess.call(["head -n"+str(numLine1-1)+" media_log_template1.txt > media_log_template.txt"],shell=False)
         # Second file fragment, replacing no.cycles consecutive to the last in first fragment
         cmd="grep -n 'media_1{1}' media_log_template2.txt | cut -d: -f1"
         numLine2=int(subprocess.check_output(cmd,shell=True).decode('utf-8').strip())
         cmd="wc -l media_log_template2.txt | cut -d' ' -f1"
         totLines2=int(subprocess.check_output(cmd,shell=True).decode('utf-8').strip())
-        subprocess.call(["tail -n"+str(totLines2-numLine2+1)+" media_log_template2.txt > temp_media2.txt"],shell=True)
+        subprocess.call(["tail -n"+str(totLines2-numLine2+1)+" media_log_template2.txt > temp_media2.txt"],shell=False)
         for x in range(1,maxCycles2+1): # +1 because max in range(1,range) is no.iterations+1
-            subprocess.call(["egrep '^media_"+str(x)+"\{' temp_media2.txt | sed 's/media_"+str(x)+"{/media_"+str(x+endCycle)+"{/' >> media_log_template.txt"],shell=True)
+            subprocess.call(["egrep '^media_"+str(x)+"\{' temp_media2.txt | sed 's/media_"+str(x)+"{/media_"+str(x+endCycle)+"{/' >> media_log_template.txt"],shell=False)
         os.remove("temp_media2.txt")
         # C.-fluxes
         # fluxes{cycle}{1}{1}{modelNumber}
         # First file fragment
         cmd="grep -n 'fluxes{"+str(endCycle+1)+"}{1}{1}{1}' flux_log_template1.txt | cut -d: -f1"
         numLine1=int(subprocess.check_output(cmd,shell=True).decode('utf-8').strip())
-        subprocess.call(["head -n"+str(numLine1-1)+" flux_log_template1.txt > flux_log_template.txt"],shell=True)
+        subprocess.call(["head -n"+str(numLine1-1)+" flux_log_template1.txt > flux_log_template.txt"],shell=False)
         # Second file fragment, replacing no.cycles consecutive to the last in first fragment
         # Not to remove any cycle, because the first one is different, given the last biomass and media composition in first part. Here there isn't cycle=0.
         for x in range(1,maxCycles2+1):
-            subprocess.call(["egrep '^fluxes\{"+str(x)+"\}' flux_log_template2.txt | sed 's/fluxes{"+str(x)+"}/fluxes{"+str(x+endCycle)+"}/' >> flux_log_template.txt"],shell=True)                    
+            subprocess.call(["egrep '^fluxes\{"+str(x)+"\}' flux_log_template2.txt | sed 's/fluxes{"+str(x)+"}/fluxes{"+str(x+endCycle)+"}/' >> flux_log_template.txt"],shell=False)                    
 
         # Plot combined
         title=str(sucrPer)+'-'+str(biomass1)+'-'+str(biomass2)+'-'+str(nh4)
         print(title)
-        subprocess.call(["../../Scripts/plot_biomassX2_vs_4mediaItem.sh 'template' 'so4' 'no3' 'pi' 'hco3' '"+str(100)+"' '"+str(title)+"' 'blue' 'cyan' 'black' 'darkmagenta' 'Synecho' 'KT'"],shell=True)
+        subprocess.call(["../../Scripts/plot_biomassX2_vs_4mediaItem.sh 'template' 'so4' 'no3' 'pi' 'hco3' '"+str(100)+"' '"+str(title)+"' 'blue' 'cyan' 'black' 'darkmagenta' 'Synecho' 'KT'"],shell=False)
         
         # 7.- Compute fitness (measure to optimize):
         # 7.1.- Determine endCycle: maxCycle
@@ -474,7 +474,7 @@ def synKtPHAFLYCOP_oneConf(sucrPer=30,biomassSynecho=3.5,biomassKT=0.1,nh4=18,fi
             finalBiomassV=lines[endCycle].split()
 
         # To measure products
-        subprocess.call(["../../Scripts/plot_biomassX2_vs_3mediaItem.sh 'template' 'sucr' 'nh4' 'C80aPHA' '"+str(float(endCycle/10))+"' '"+str(title)+"' 'blue' 'black' 'darkmagenta' 'Synecho' 'KT'"],shell=True)
+        subprocess.call(["../../Scripts/plot_biomassX2_vs_3mediaItem.sh 'template' 'sucr' 'nh4' 'C80aPHA' '"+str(float(endCycle/10))+"' '"+str(title)+"' 'blue' 'black' 'darkmagenta' 'Synecho' 'KT'"],shell=False)
         with open("biomass_vs_sucr_nh4_C80aPHA_template.txt", "r") as sources:        
             lines = sources.readlines()
         finalLineV=lines[endCycle].split()
